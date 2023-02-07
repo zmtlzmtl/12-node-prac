@@ -20,5 +20,5 @@ app.put('/user', function (req, res) {
 
 app.delete('/user', function (req, res) {
     res.send("Got a DELETE request at /user");
-});
+}); 
 
