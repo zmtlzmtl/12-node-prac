@@ -4,7 +4,7 @@ const Posts = require('../schemas/post');
 
 //전체 조회
 router.get("/posts", async (req, res) => {
-    const posts = await Posts.find().sort({'createdAt': 1});
+    const posts = await Posts.find().sort({'createdAt': -1});
     const result = posts.map((post) => {
         return {
             'postId': post._id,
@@ -19,6 +19,9 @@ router.get("/posts", async (req, res) => {
 //생성
 router.post('/posts', async (req, res) => {
     const { user, password, title, content } = req.body;
+    if (!(user && password && title && content)) {
+        return res.status(400).json({ message: '데이터 형식이 올바르지 않습니다.' });
+    }
     await Posts.create({ user, password, title, content });
     res.json({ 'message': '게시글이 생성되었습니다.' });
 });
