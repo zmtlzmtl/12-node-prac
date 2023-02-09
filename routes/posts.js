@@ -43,7 +43,7 @@ router.get('/posts/:_id', async (req, res) => {
         })
         res.json({'data': result});
     }
-     return res.status(400).json({ message: '데이터 형식이 올바르지 않습니다.' });
+    return res.status(400).json({ message: '데이터 형식이 올바르지 않습니다.' });
 });
 
 //id와 password를 이용하여 게시물 수정하기

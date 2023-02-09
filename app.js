@@ -1,6 +1,3 @@
-require('dotenv').config();
-const { POST } = process.env;
-
 const express = require('express')
 const app = express()
 const post = 3000;
@@ -22,4 +19,3 @@ app.get('/', (req, res) => {
 app.listen(post, () => {
     console.log(post, '서버가 열렸습니다')
 });
-
