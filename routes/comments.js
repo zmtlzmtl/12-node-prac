@@ -17,16 +17,21 @@ router.post('/comments/:postId', async (req, res) => {
 // 조회
 router.get('/comments/:postId', async (req, res) => {
     const { postId } = req.params;
-    const comment = await Comments.find({ postId }).sort({ "createdAt": -1 });
-    const result = comment.map((comment) => {
-        return {
-        "commentsId": comment._id,
-        "user": comment.user,      
-        "content": comment.content,     
-        "createdAt": comment.createdAt
-        };
-    })
-    res.json({"data": result});
+    try {
+        const comment = await Comments.find({ postId }).sort({ "createdAt": -1 });
+        const result = comment.map((comment) => {
+            return {
+                "commentsId": comment._id,
+                "user": comment.user,
+                "content": comment.content,
+                "createdAt": comment.createdAt
+            };
+        })
+        res.json({ "data": result });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: '나도 뭔지 모르겠습니다.' });
+    }
 });
 
 //수정하기

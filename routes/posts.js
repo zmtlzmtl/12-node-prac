@@ -4,16 +4,24 @@ const Posts = require('../schemas/post');
 
 //전체 조회
 router.get("/posts", async (req, res) => {
-    const posts = await Posts.find().sort({'createdAt': -1});
-    const result = posts.map((post) => {
-        return {
-            'postId': post._id,
-            'user': post.user,
-            'title': post.title,
-            'createdAt': post.createdAt
-        }
-    })
-    res.json({'data': result});
+    try {                     //await앞에 try; 
+        const posts = await Posts.find().sort({ 'createdAt': -1 });
+        if (!posts.length) {
+            res.status(400).json({ message: '데이터 형식이 올바르지 않습니다.' });
+        };
+        const result = posts.map((post) => {
+            return {
+                'postId': post._id,
+                'user': post.user,
+                'title': post.title,
+                'createdAt': post.createdAt
+            }
+        }) 
+        res.json({'data': result});
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: '나도 뭔지 모르겠습니다.' });
+    }
 })
 
 //생성
