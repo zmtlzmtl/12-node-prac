@@ -20,7 +20,7 @@ router.post("/login", async (req, res) => {
     }
 
     const token = jwt.sign(
-        { userId: user.userId },
+        { Id: user.Id },
         "custom-secret-key",
   );
 

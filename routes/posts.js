@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const Users = require("../schemas/user");
 const Posts = require('../schemas/post');
-
+const authMiddleware = require("../middlewares/auth-middleware");
 //전체 조회
 router.get("/posts", async (req, res) => {
     try {                     //await앞에 try; 
@@ -25,12 +26,22 @@ router.get("/posts", async (req, res) => {
 })
 
 //생성
-router.post('/posts', async (req, res) => {
-    const { user, password, title, content } = req.body;
-    if (!(user && password && title && content)) {
+router.post('/posts', authMiddleware, async (req, res) => {
+    const { userId } = res.locals.user;
+    const { title, content } = req.body;
+    const maxBypostId = await Posts.findOne().sort("-order").exec();
+    const postId = maxBypostId ? maxBypostId.postId + 1 : 1;
+
+    const existsUsers = await Users.findOne({ userId });
+    if (!existsUsers) {
+        return res.status(400).json({
+              errorMessage: "로그인이 필요한 기능입니다."
+          });
+        }
+    if (!(title && content)) {
         return res.status(400).json({ message: '데이터 형식이 올바르지 않습니다.' });
     }
-    await Posts.create({ user, password, title, content });
+    await Posts.create({ postId, title, content });
     res.json({ 'message': '게시글을 생성하였습니다.' });
 });
 

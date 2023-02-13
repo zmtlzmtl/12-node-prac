@@ -1,13 +1,10 @@
 const mongoose = require('mongoose');
 
-const postSchema = new mongoose.Schema({
-    user: { 
-        type: String,
-        required: true
-    },
-    password: {
-        type: String,
-        required: true
+const postSchema = new mongoose.Schema({  //게시물을 생성할 때 DB에 넣고싶은것
+    postId: {
+        type: Number,
+        required: true,
+        unique: true,
     },
     title: {
         type: String,
