@@ -10,7 +10,7 @@ const UserSchema = new mongoose.Schema({ //회원가입 할 때 DB에 넣고싶�
     type: Number,
     required: true,
     unique: true,
-},
+  },
   password: { // password 필드
     type: String,
   },

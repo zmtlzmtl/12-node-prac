@@ -4,7 +4,14 @@ const postSchema = new mongoose.Schema({  //게시물을 생성할 때 DB에 넣
     postId: {
         type: Number,
         required: true,
-        unique: true,
+    },
+    nickname: { // nickname 필드 
+        type: String,
+        required: true,
+    },
+    userId: {
+        type: Number,
+        required: true,
     },
     title: {
         type: String,
