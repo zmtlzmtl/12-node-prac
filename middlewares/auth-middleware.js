@@ -20,7 +20,7 @@ module.exports = async (req, res, next) => {
   try {  //{Id: 63e9d1c2edd4003db1b1f5f3}
     const { Id } = jwt.verify(authToken, "custom-secret-key"); //토큰이 만료되었는지, 서버에서 발급한 토큰이 맞는지
     const user = await Users.findById(Id); //토큰에 있는 userId에 해당하는 사용자가 DB에 존재하는지
-    
+    console.log(Id)
     res.locals.user = user; //굳이 DB에서 사용자정보를 가져오지않고 express가 제공하는 안전한 변수에 담아 사용한다.
     next(); // 다음 미들웨어로 넘겨준다.
   } catch (err) {
