@@ -6,7 +6,7 @@ const Users = require("../schemas/user");
 // 회원가입 API
 router.post("/signup", async (req, res) => {
     const { nickname, password, confirm } = req.body;
-    const maxByUserId = await Users.findOne().sort("-order").exec();
+    const maxByUserId = await Users.findOne().sort("-userId").exec();
     const userId = maxByUserId ? maxByUserId.userId + 1 : 1;
 
     //패스워드 확인

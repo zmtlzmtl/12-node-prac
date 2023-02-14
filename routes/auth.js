@@ -22,7 +22,8 @@ router.post("/login", async (req, res) => {
     const token = jwt.sign(
         { Id: user.Id },
         "custom-secret-key",
-  );
+    );
+    console.log(token);
 
     res.cookie("Authorization", `Bearer ${token}`);
     res.status(200).json({ token });

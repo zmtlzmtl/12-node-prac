@@ -20,7 +20,7 @@ router.get("/posts", async (req, res) => {
                 'title': post.title,
                 'content': post.content,
                 'createdAt': post.createdAt
-                //"updatedAt" 어떻게 집어넣을까?
+                //"updatedAt" 어떻게 집어넣을까? post.updatedAt
             }
         }) 
         res.json({'data': result});
@@ -33,12 +33,12 @@ router.get("/posts", async (req, res) => {
 
 //생성
 router.post('/posts', authMiddleware, async (req, res) => {
-    const _Id = res.locals.user.userId;
+    const _Id = res.locals.user.userId; //바로 꺼내어 써도됨 { userId, nickname }
     const { title, content } = req.body;
     const { userId, nickname } = await Users.findOne({ _Id });
     const maxBypostId = await Posts.findOne().sort("-postId").exec();
-    console.log (maxBypostId)
     const postId = maxBypostId ? maxBypostId.postId + 1 : 1;
+    console.log(maxBypostId, postId)
 
     const existsUsers = await Users.findOne({ _Id });
     if (!existsUsers) {
@@ -50,7 +50,7 @@ router.post('/posts', authMiddleware, async (req, res) => {
         return res.status(400).json({ message: '데이터 형식이 올바르지 않습니다.' });
     }
     await Posts.create({ postId, userId, nickname, title, content });
-    res.json({ 'message': '게시글을 생성하였습니다.' });
+    res.status(200).json({ 'message': '게시글을 생성하였습니다.' });
 });
 
 //특정 식별자인 id로 게시물 조회하기
@@ -93,7 +93,7 @@ router.put('/posts/:postId', authMiddleware, async (req, res) => {
     return res.json({ "message": "게시글을 수정하였습니다." });
 });
 
-//쿠키 데이터를 이용하여 게시물 수정하기
+//쿠키 데이터를 이용하여 게시물 삭제하기
 router.delete('/posts/:postId', authMiddleware, async (req, res) => {
     const { userId } = res.locals.user;
     const { postId } = req.params;
