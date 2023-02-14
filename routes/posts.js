@@ -7,8 +7,8 @@ const authMiddleware = require("../middlewares/auth-middleware");
 //전체 조회
 router.get("/posts", async (req, res) => {
     try {                     //await앞에 try; 
-        const posts = await Posts.find().sort({ 'createdAt': -1 });
-
+        const posts = await Posts.find().sort({ 'createdAt': -1 });   //DB를 2번 들어간다. or schema에 중복된 값을 저장시켜준다. (상황마다 다르게 쓰여야한다 (메모리사용))
+                            Users.find()                                       //mongoDB, mysql
         if (!posts.length) {
             res.status(404).json({ errorMessage: "게시글이 존재하지 않습니다." });
         };
@@ -16,7 +16,7 @@ router.get("/posts", async (req, res) => {
             return {
                 'postId': post.postId,
                 'userId': post.userId,
-                'nickname': post.nickname,
+                'nickname': user.nickname,
                 'title': post.title,
                 'content': post.content,
                 'createdAt': post.createdAt
@@ -33,7 +33,7 @@ router.get("/posts", async (req, res) => {
 
 //생성
 router.post('/posts', authMiddleware, async (req, res) => {
-    const { userId, nickname } = res.locals.user; //바로 꺼내어 써도됨 { userId, nickname }
+    const { userId, nickname } = res.locals.user;
     const { title, content } = req.body;
     try {
         const maxBypostId = await Posts.findOne().sort("-postId").exec();
@@ -48,7 +48,7 @@ router.post('/posts', authMiddleware, async (req, res) => {
             return res.status(412).json({ errmessage: '게시글 내용의 형식이 일치하지 않습니다.' });
         }
         await Posts.create({ postId, userId, nickname, title, content });
-        res.status(200).json({ 'message': '게시글을 생성하였습니다.' });
+        res.status(200).json({ message: '게시글을 생성하였습니다.' });
     } catch (err) {
         console.error(err);
         res.status(500).json({ errmessage: '게시글 작성에 실패하였습니다.' });
@@ -64,7 +64,7 @@ router.get('/posts/:postId', async (req, res) => {
         if (!post) {
             return res.status(400).json({ errmessage: '게시글 조회에 실패하였습니다.' });
         }
-        const result = post.map((post) => {  //findOne을 사용하면 map을 돌리지 못한다.
+        const result = post.map((post) => {  //findOne을 사용하면 map을 돌리지 못한다.   //객체로 반환시키든가, 
             return {
                 'postId': post.postId,
                 'userId': post.userId,
@@ -84,7 +84,7 @@ router.get('/posts/:postId', async (req, res) => {
 
 //쿠키 데이터를 이용하여 게시물 수정하기
 router.put('/posts/:postId', authMiddleware, async (req, res) => {
-    const { userId } = res.locals.user;
+    // const { userId } = res.locals.user;
     const { postId } = req.params;
     const { title, content } = req.body;
     try {
@@ -100,9 +100,9 @@ router.put('/posts/:postId', authMiddleware, async (req, res) => {
         if (!content) {
             return res.status(412).json({ errmessage: '게시글 내용의 형식이 일치하지 않습니다.' });
         }
-        if (post.userId !== userId) {
-            return res.status(403).json({ message: '로그인이 필요한 기능입니다.' });
-        }
+        // if (post.userId !== userId) {
+        //     return res.status(403).json({ message: '로그인이 필요한 기능입니다.' });
+        // }
         await Posts.updateOne({ postId }, { $set: { title, content } });
         return res.status(200).json({ "message": "게시글을 수정하였습니다." });
     } catch (err) {
@@ -121,9 +121,9 @@ router.delete('/posts/:postId', authMiddleware, async (req, res) => {
         if (!post) {
             return res.status(400).json({ message: '게시물이 존재하지 않습니다.' });
         }
-        if (post.userId !== userId) {
-            return res.status(403).json({ message: '로그인이 필요한 기능입니다.' });
-        }
+        // if (post.userId !== userId) {
+        //     return res.status(403).json({ message: '로그인이 필요한 기능입니다.' });
+        // }
         await Posts.deleteOne({ userId, postId });
         return res.status(200).json({ message: '게시물을 삭제하였습니다.' });
     } catch (err) {

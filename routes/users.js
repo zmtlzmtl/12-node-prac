@@ -7,7 +7,7 @@ const Users = require("../schemas/user");
 router.post("/signup", async (req, res) => {
     const { nickname, password, confirm } = req.body;
     try {
-    const maxByUserId = await Users.findOne().sort("-userId").exec();
+    const maxByUserId = await Users.findOne().sort("-userId").exec();   // 인덱스를 사용하는 방법은 좋지만은 않은 방법이다. 자동으로 주는 ID를 쓰는것도
     const userId = maxByUserId ? maxByUserId.userId + 1 : 1;
     const nameCheck = /^[a-zA-Z0-9]{4,}$/; //공백없는 숫자와 대소문자
     
@@ -45,7 +45,7 @@ router.post("/signup", async (req, res) => {
         res.status(201).json({ message: "회원가입이 완료되었습니다."});
     } catch (err) {
         console.error(err);
-        res.status(500).json({ errmessage: '요청한 데이터 형식이 올바르지 않습니다.' });
+        res.status(500).json({ errmessage: '요청한 데이터 형식이 올바르지 않습니다.' });  //500은 서버안에서 자동으로 일어난 에러, 400 bad req(사용자의 잘못된 요청)
     }
 });
 

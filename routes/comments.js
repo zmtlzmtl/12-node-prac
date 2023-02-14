@@ -11,9 +11,9 @@ router.post('/posts/:postId/comments', authMiddleware, async (req, res) => {
     try {
         const maxBycommentId = await Comments.findOne({ postId }).sort("-commentId").exec();  //post마다 commentId가 1부터 시작하게 만들고싶은거임
         const commentId = maxBycommentId ? maxBycommentId.commentId + 1 : 1;   //post경우에는 null이였는데, 여기선 post가 존재할 때도 더해주는 거니까. NaN + 1 === NaN
-        if (!userId) {
-            return res.status(403).json({ errmessage: "로그인이 필요한 기능입니다."});
-        }
+        // if (!userId) {
+        //     return res.status(403).json({ errmessage: "로그인이 필요한 기능입니다."});
+        // }
         if (!comment) {
             return res.status(412).json({ errormessage: "데이터 형식이 올바르지 않습니다." });
         };
@@ -24,7 +24,7 @@ router.post('/posts/:postId/comments', authMiddleware, async (req, res) => {
             nickname,
             comment
         });
-        return res.json({ "message": "댓글을 생성하였습니다." });
+        return res.status(200).json({ "message": "댓글을 생성하였습니다." });
     } catch (err) {
         console.error(err);
         res.status(500).json({ errmessage: '댓글 작성에 실패하였습니다.' });
@@ -36,7 +36,7 @@ router.get('/posts/:postId/comments', async (req, res) => {   //파람을 8로 �
     const { postId } = req.params;
     try {
         const comments = await Comments.find({ postId }).sort('-commentId');
-        if (!comments || comments.length === 0) {   //이것도 확립이 필요하다. 사실 뒤에만 써도 될듯 
+        if (!comments || comments.length === 0) {   //이것도 확립이 필요하다. 사실 뒤에만 써도 될듯
             return res.status(400).json({ errmessage: '댓글이 존재하지 않습니다.' });
         }
         const result = comments.map((comment) => {
@@ -64,16 +64,16 @@ router.put('/posts/:postId/comments/:commentId', authMiddleware, async (req, res
     try {
         const updateComment = await Comments.findOne({ postId, commentId });  // 2,3 params로 받아왔는데 1,1 이 수정됨 (설마 업데이트?)
 
-        if (updateComment.userId !== userId) {
-            return res.status(400).json({ errmessage: '로그인이 필요한 기능입니다.' });
-        }
+        // if (updateComment.userId !== userId) {
+        //     return res.status(400).json({ errmessage: '로그인이 필요한 기능입니다.' });
+        // }
         if (!comment) {
-            return res.status(412).json({ errmessage: '데이터 형식이 올바르지 않습니다.' });
+            return res.status(412).json({ errmessage: '데이터 형식이 올바르지 않습니다.' }); 
         }
-        if (updateComment.length === 0) {  //코멘트가 없는 번호를 넣으면 실행이 되야하는데,,
+        if (updateComment.length === 0) {  //코멘트가 없는 번호를 넣으면 실행이 되야하는데,,    //객체는 길이가 있는지?????
             return res.status(404).json({ errmessage: '댓글이 존재하지 않습니다.' });
         }
-        await Comments.updateOne({ userId, postId, commentId }, { $set: { comment } });  //업데이트 조건에 세가지를 안적고 userID만 적었더니 해당하는 것에 맨위에것이 삭제되었다.
+        await Comments.updateOne({ userId, postId, commentId }, { $set: { comment } });  //업데이트 조건에 세가지를 안적고 userID만 적었더니 해당하는 것에 맨위에것이 삭제되었다.  //commentId 명명을 다르게 순서니까
         return res.json({ message: "댓글을 수정하였습니다." });
     } catch (err) {
         console.error(err);
@@ -87,15 +87,15 @@ router.delete('/posts/:postId/comments/:commentId', authMiddleware, async (req, 
     const { userId } = res.locals.user;
     const { postId, commentId } = req.params;
     try {
-        const comment = await Comments.findOne({ postId, commentId });
+        const comment = await Comments.findOne({ postId, commentId });  //조건과 결과를 찾는게 다르면 안됨 애
 
         if (!comment) {
             return res.status(404).json({ errmessage: '댓글이 존재하지 않습니다.' });
         }
         if (comment.userId !== userId) {
-            return res.status(403).json({ errmessage: '로그인이 필요한 기능입니다.' });
+            return res.status(403).json({ errmessage: '로그인이 필요한 기능입니다.' });  //403은 허용하지않은
         }
-        await Comments.deleteOne({ userId, postId, commentId });
+        await Comments.deleteOne({ postId, commentId });
         return res.status(200).json({ message: '댓글을 삭제하였습니다.' });
     } catch (err) {
         console.error(err);

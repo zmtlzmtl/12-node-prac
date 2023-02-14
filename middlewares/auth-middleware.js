@@ -11,7 +11,7 @@ module.exports = async (req, res, next) => {
   //Bearer과 token을 나눠주는것
 
   if (!authToken || authType !== "Bearer") {
-    res.status(401).send({
+    res.status(403).send({               // 401에서 403
       errorMessage: "로그인 후 이용 가능한 기능입니다.",
     });
     return;
@@ -25,7 +25,7 @@ module.exports = async (req, res, next) => {
     next(); // 다음 미들웨어로 넘겨준다.
   } catch (err) {
     console.error(err);
-    res.status(401).send({
+    res.status(403).send({
       errorMessage: "로그인 후 이용 가능한 기능입니다.",
     });
   }

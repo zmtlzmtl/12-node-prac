@@ -21,9 +21,9 @@ router.post("/login", async (req, res) => {
 
         const token = jwt.sign(
             { Id: user.Id },
-            "custom-secret-key",
+            "custom-secret-key", //환경변수이용, 깃도 퍼블릭이면 다 볼수있음 (남들이 보면 안되는것)
         );
-        res.cookie("Authorization", `Bearer ${token}`);
+        res.cookie("Authorization", `Bearer ${token}`);  //토큰의 인증 타입, jwt 같은 인증 방식에서의 약속
         res.status(200).json({ token });
     } catch (err) {
         console.error(err)
