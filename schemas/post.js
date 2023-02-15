@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 
-const postSchema = new mongoose.Schema({  //게시물을 생성할 때 DB에 넣고싶은것
+const postSchema = new mongoose.Schema({  
     postId: {
         type: Number,
         required: true,
     },
-    nickname: { // nickname 필드 
+    nickname: { 
         type: String,
         required: true,
     },
@@ -21,10 +21,8 @@ const postSchema = new mongoose.Schema({  //게시물을 생성할 때 DB에 넣
         type: String,
         required: true
     },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    }
-});
+},
+    { timestamps: true }
+);
 
 module.exports = mongoose.model('post', postSchema);
